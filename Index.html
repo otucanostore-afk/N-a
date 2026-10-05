@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N.A Miudezas - Nilda e Aldo</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff6b00;
+            --primary-dark: #e05e00;
+            --bg-color: #f8f9fa;
+            --text-color: #333333;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-top: 80px;
+        }
+        /* Cabeçalho */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            z-index: 1000;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+        .logo-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .header-center {
+            display: flex;
+            gap: 10px;
+        }
+        .catalog-switch-btn {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: 0.2s;
+        }
+        .catalog-switch-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .view-controls {
+            display: flex;
+            gap: 10px;
+        }
+        .view-btn {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--text-color);
+            transition: 0.2s;
+        }
+        .view-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        /* Menu Lateral (Drawer) */
+        .drawer {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background: #ffffff;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            z-index: 1100;
+            transition: 0.3s ease;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .drawer.open {
+            left: 0;
+        }
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .drawer-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .close-drawer {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+        }
+        .drawer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .drawer-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+        .drawer-links a:hover {
+            color: var(--primary);
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1050;
+            display: none;
+        }
+        .overlay.active {
+            display: block;
+        }
+        /* Conteúdo Principal */
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .search-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .search-container input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .search-container i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 18px;
+        }
+        /* Visualização em Grelha (Cards) */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-3px);
+        }
+        .product-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: #eee;
+        }
+        .product-info {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+        .product-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .product-details {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        /* Visualização em Tabela */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+        th {
+            background: #fdfdfd;
+            font-weight: 600;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .table-img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        @media(max-width: 900px) {
+            header {
+                padding: 10px 3%;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .header-center {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+            body {
+                padding-top: 120px;
+            }
+        }
+        @media(max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="logo-area">
+            <button class="menu-btn" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+            <div class="logo-title">N.A Miudezas</div>
+        </div>
+        <div class="header-center">
+            <button class="catalog-switch-btn active" id="btnCatalog1">Catálogo 1</button>
+            <button class="catalog-switch-btn" id="btnCatalog2">N.A Miudezas (Novo)</button>
+        </div>
+        <div class="view-controls">
+            <button class="view-btn active" id="btnGrid" title="Ver em Grelha"><i class="fa-solid fa-grip"></i></button>
+            <button class="view-btn" id="btnTable" title="Ver em Tabela"><i class="fa-solid fa-table"></i></button>
+        </div>
+    </header>
+    <!-- Menu Lateral (Drawer) -->
+    <div class="overlay" id="overlay"></div>
+    <nav class="drawer" id="drawer">
+        <div class="drawer-header">
+            <h3>Menu</h3>
+            <button class="close-drawer" id="closeDrawer"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="drawer-subtitle">Nilda e Aldo</div>
+        <ul class="drawer-links">
+            <li><a href="#"><i class="fa-solid fa-house" style="margin-right: 10px;"></i> Início</a></li>
+            <li><a href="https://wa.me/5588993148625" target="_blank"><i class="fa-brands fa-whatsapp" style="margin-right: 10px; color: #25d366;"></i> Contato: (88) 99314-8625</a></li>
+            <li><a href="https://wa.me/5588982168670" target="_blank"><i class="fa-brands fa-whatsapp" style="margin-right: 10px; color: #25d366;"></i> Contato: (88) 98216-8670</a></li>
+        </ul>
+    </nav>
+    <!-- Conteúdo Principal -->
+    <main>
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Pesquisar produtos..." onkeyup="filterProducts()">
+        </div>
+        <!-- Grelha de Produtos -->
+        <div class="products-grid" id="productsGrid"></div>
+        <!-- Tabela de Produtos -->
+        <div class="table-responsive" id="productsTableContainer">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Imagem</th>
+                        <th>Produto</th>
+                        <th>Detalhes / Embalagem</th>
+                        <th>Preço (R$)</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody"></tbody>
+            </table>
+        </div>
+    </main>
+    <script>
+        const productsCatalog1 = [
+            { name: "Bolacha wafer", details: "Unidade / Geral", price: "46,00", image: "https://i.ibb.co/gLt3Hwwk/IMG-20260930-WA0018.jpg" },
+            { name: "Tinta capilar Cor&ton", details: "Unidade", price: "14,00", image: "https://i.ibb.co/9H2pqzX2/Gemini-Generated-Image-f769nf769nf769nf.jpg" },
+            { name: "Biscoito Tieta", details: "Unidade / Fardo", price: "90,00", image: "https://i.ibb.co/GvYzWwd0/Gemini-Generated-Image-b2glbdb2glbdb2gl.jpg" },
+            { name: "Biscoito futurinhos", details: "Unidade", price: "21,00", image: "https://i.ibb.co/Y4KGz98s/IMG-20260930-WA0013.jpg" },
+            { name: "Rastelo", details: "R$ 96,00 a dúzia", price: "96,00", image: "https://i.ibb.co/39gSYHB4/Gemini-Generated-Image-9uqxxd9uqxxd9uqx.jpg" },
+            { name: "Snacks Psiu!", details: "Unidade", price: "24,00", image: "https://i.ibb.co/JjXjsyc2/Gemini-Generated-Image-qg2rirqg2rirqg2r.jpg" },
+            { name: "Creme skala", details: "c/ 6 unidades", price: "64,00", image: "https://i.ibb.co/whRGwnS9/Gemini-Generated-Image-l4ll42l4ll42l4ll.jpg" },
+            { name: "Rodo plástico", details: "c/ 12 unidades", price: "57,00", image: "https://i.ibb.co/hxLGZB5Q/Gemini-Generated-Image-bsm5jzbsm5jzbsm5.jpg" },
+            { name: "Shampoo e condicionador skala", details: "Kit", price: "16,00", image: "" },
+            { name: "Fita crepe", details: "c/ 6 unidades", price: "23,00", image: "https://i.ibb.co/Xx4dVzPB/Gemini-Generated-Image-7bbnzs7bbnzs7bbn.jpg" },
+            { name: "Pano de chão", details: "c/ 3 unidades", price: "8,50", image: "https://i.ibb.co/qMnc8NtD/Gemini-Generated-Image-9pbkit9pbkit9pbk.jpg" },
+            { name: "Fita crepe clara", details: "c/ 5 unidades", price: "17,00", image: "https://i.ibb.co/4ZPY0LCx/Gemini-Generated-Image-qnxgx4qnxgx4qnxg.jpg" },
+            { name: "Hidratante paixão", details: "Unidade", price: "8,50", image: "https://i.ibb.co/0jGGRNb6/Gemini-Generated-Image-woaj0ywoaj0ywoaj.jpg" },
+            { name: "Prestobarba bic acqua 3", details: "Unidade", price: "53,00", image: "https://i.ibb.co/s9GFGzk9/IMG-20261003-WA0011.jpg" },
+            { name: "Etiqueta adesiva", details: "c/ 10 unidades", price: "18,00", image: "https://i.ibb.co/bR5r5kmD/IMG-20261003-WA0010.jpg" },
+            { name: "Lâmpada", details: "c/ 10 unidades", price: "36,00", image: "https://i.ibb.co/HDtTZYPP/IMG-20261003-WA0009.jpg" },
+            { name: "Toddynho", details: "c/ 27 unidades", price: "35,00", image: "https://i.ibb.co/vvh7vwmr/IMG-20260930-WA0010.jpg" },
+            { name: "Pente safira", details: "c/ 24 unidades", price: "15,00", image: "https://i.ibb.co/ymrnKtfF/IMG-20261003-WA0008.jpg" },
+            { name: "Pente pequeno", details: "c/ 24 unidades", price: "15,00", image: "https://i.ibb.co/kg3ctZtJ/IMG-20261003-WA0007.jpg" },
+            { name: "Nescau", details: "c/ 27 unidades", price: "52,00", image: "https://i.ibb.co/xpfySp0/IMG-20261003-WA0006.jpg" },
+            { name: "Chiclete buzzy tatuagem", details: "Unidade / Display", price: "8,00", image: "https://i.ibb.co/8gbpW3DS/IMG-20261003-WA0005.jpg" },
+            { name: "Fita isolante", details: "c/ 10 unidades", price: "15,00", image: "https://i.ibb.co/V0jYkzGn/Gemini-Generated-Image-eixb8deixb8deixb.jpg" },
+            { name: "Torresminho sabor picanha", details: "c/ 10 unidades", price: "12,00", image: "https://i.ibb.co/xTPVWfS/Gemini-Generated-Image-d77mmpd77mmpd77m.jpg" },
+            { name: "Fita veda rosca profissional", details: "c/ 10 unidades", price: "15,00", image: "https://i.ibb.co/svxWQQyw/Gemini-Generated-Image-7hk3yl7hk3yl7hk3.jpg" },
+            { name: "Cortador de unha", details: "3\" p 17,00 / g 31,00", price: "17,00 / 31,00", image: "https://i.ibb.co/PZpd2Vq6/IMG-20261003-WA0003.jpg" },
+            { name: "Acetona", details: "c/ 12 unidades", price: "31,00", image: "https://i.ibb.co/zTTTLpcX/Gemini-Generated-Image-v2gz62v2gz62v2gz.jpg" },
+            { name: "Água oxigenada vol 30", details: "c/ 12 unidades", price: "31,00", image: "https://i.ibb.co/ccTnStGj/IMG-20261003-WA0002.jpg" },
+            { name: "Pasta de dente sorriso", details: "70g 34,00 / 90g 46,00 / 180g 64,00", price: "34,00 a 64,00", image: "https://i.ibb.co/VYY14zxC/IMG-20261003-WA0017.jpg" },
+            { name: "Pipocão Gravatá", details: "c/ 10 unidades", price: "9,00", image: "https://i.ibb.co/wrsWmMSw/IMG-20261003-WA0016.jpg" },
+            { name: "Borracha de panela", details: "2,5L / 4,5L / 7,7 (20,00 cada)", price: "20,00", image: "https://i.ibb.co/mVfzhk93/IMG-20261003-WA0015.jpg" },
+            { name: "Pipofloc's 42g", details: "c/ 12 unidades", price: "12,00", image: "https://i.ibb.co/hx8RpBWy/IMG-20261003-WA0014.jpg" },
+            { name: "Biscoito tuc's", details: "c/ 30 unidades", price: "62,00", image: "https://i.ibb.co/93Wy5dvJ/IMG-20261003-WA0013.jpg" },
+            { name: "Vassoura", details: "c/ 13 unidades", price: "78,00", image: "https://i.ibb.co/mr31Nj97/IMG-20260930-WA0025.jpg" },
+            { name: "Bolinho de chocolate", details: "c/ 12 unidades", price: "18,00", image: "https://i.ibb.co/Nd9fqD2h/Gemini-Generated-Image-qtyzccqtyzccqtyz.jpg" },
+            { name: "Vassoura plus pelo", details: "c/ 12 unidades", price: "91,00", image: "https://i.ibb.co/Z1dMQbjT/IMG-20261003-WA0035.jpg" },
+            { name: "Prestobarba gillette", details: "c/ 24 unidades", price: "53,00", image: "https://i.ibb.co/5gG9fQ7v/IMG-20261003-WA0034.jpg" },
+            { name: "Rodo 40cm", details: "c/ 12 unidades", price: "57,00", image: "https://i.ibb.co/pv8BXxJ4/IMG-20260930-WA0028.jpg" },
+            { name: "Bolinhos lukinha", details: "c/ 12 unidades", price: "15,00", image: "https://i.ibb.co/Y7Mf1d0V/IMG-20261003-WA0033.jpg" },
+            { name: "Rodo 30cm", details: "c/ 12 unidades", price: "57,00", image: "https://i.ibb.co/qMwYBKQ6/IMG-20260930-WA0014.jpg" },
+            { name: "Prestobarba bic", details: "c/ 24 unidades", price: "48,00", image: "https://i.ibb.co/8DXkdmTn/IMG-20261003-WA0019.jpg" },
+            { name: "Kit shampoo e condicionador probelle", details: "Kit", price: "15,00", image: "https://i.ibb.co/JR8rHHvK/IMG-20261003-WA0020.jpg" },
+            { name: "Creme salon line", details: "Unidade", price: "32,50", image: "https://i.ibb.co/mVrmKmx0/IMG-20260930-WA0015.jpg" },
+            { name: "Sabonete even", details: "c/ 12 unidades", price: "21,00", image: "https://i.ibb.co/hJB0TnLp/IMG-20261003-WA0022.jpg" },
+            { name: "Pedras sanitárias", details: "c/ 12 unidades", price: "18,00", image: "https://i.ibb.co/jPDV71bD/IMG-20261003-WA0021.jpg" },
+            { name: "Sabonete de coco", details: "c/ 12 unidades", price: "16,00", image: "https://i.ibb.co/JR2WNXvF/IMG-20261003-WA0031.jpg" },
+            { name: "Pipoca doce Gravatá", details: "c/ 10 unidades", price: "9,00", image: "https://i.ibb.co/zH8tgcwT/IMG-20261003-WA0024.jpg" },
+            { name: "Cheetos/fandangos/cebolitos", details: "fardo c/50 ou tira c/10", price: "55,00 / 12,00", image: "https://i.ibb.co/r2rZpD9P/IMG-20261003-WA0025.jpg" },
+            { name: "Shampoo e condicionador Elseve", details: "Kit", price: "30,00", image: "https://i.ibb.co/Zqxtfhp/IMG-20261003-WA0026.jpg" },
+            { name: "Esqueiro Bic", details: "c/ 12 unidades", price: "49,00", image: "https://i.ibb.co/ynbNm9mx/IMG-20261003-WA0027.jpg" },
+            { name: "Batata chips", details: "a caixa c/ 20", price: "30,00", image: "https://i.ibb.co/C5qBGDLP/IMG-20261003-WA0000.jpg" },
+            { name: "Lâminas de barbear superbarba", details: "Unidade", price: "38,00", image: "https://i.ibb.co/DmW39gV/IMG-20261003-WA0001.jpg" },
+            { name: "Sabonete de aroeira", details: "Unidade", price: "16,00", image: "https://i.ibb.co/JR2WNXvF/IMG-20261003-WA0031.jpg" },
+            { name: "Condicionador seda", details: "Unidade", price: "18,00", image: "https://i.ibb.co/fdcLWVjH/IMG-20260930-WA0020.jpg" },
+            { name: "Pimentinha", details: "c/ 50 unidades", price: "25,00", image: "https://i.ibb.co/fdT05kBP/IMG-20260930-WA0047.jpg" },
+            { name: "Lâminas de barbear Wilkinson", details: "c/ 20 unidades", price: "25,00", image: "https://i.ibb.co/200hQJjV/IMG-20260930-WA0046.jpg" },
+            { name: "Corda", details: "2m 20,00 / 3m 28,00 / 4m 25,00", price: "20,00 a 28,00", image: "https://i.ibb.co/TqrmCTbF/IMG-20260930-WA0045.jpg" },
+            { name: "Amendoim torrado", details: "c/ 60 unidades", price: "35,00", image: "https://i.ibb.co/jkjWHph5/IMG-20260930-WA0044.jpg" },
+            { name: "Nissin lámen", details: "c/ 50 unidades", price: "95,00", image: "https://i.ibb.co/ycT3rXJt/IMG-20260930-WA0043.jpg" },
+            { name: "Paçokids", details: "Unidade", price: "15,00", image: "https://i.ibb.co/G4tBX2Nj/IMG-20260930-WA0041.jpg" },
+            { name: "Lâminas de barbear lord", details: "Unidade", price: "21,00", image: "https://i.ibb.co/pvJC7F3Q/IMG-20260930-WA0042.jpg" },
+            { name: "Macarrão instantâneo", details: "c/ 50 unidades", price: "70,00", image: "https://i.ibb.co/7dBNgc2X/IMG-20260930-WA0040.jpg" },
+            { name: "Pirulito berbau pop chiclete", details: "Unidade", price: "14,00", image: "https://i.ibb.co/VpvM5t0v/IMG-20260930-WA0039.jpg" },
+            { name: "Pirulito mastigavel", details: "Unidade", price: "14,00", image: "https://i.ibb.co/WW9DRHMt/IMG-20260930-WA0038.jpg" },
+            { name: "Mint hortelã", details: "Unidade", price: "8,50", image: "https://i.ibb.co/r2CKfkYW/IMG-20260930-WA0037.jpg" },
+            { name: "Balas sortidas", details: "Unidade", price: "8,50", image: "https://i.ibb.co/rKVLsyZY/IMG-20260930-WA0036.jpg" },
+            { name: "Bala Santa Rita", details: "Unidade", price: "8,50", image: "https://i.ibb.co/xK6kKMxn/IMG-20260930-WA0034.jpg" },
+            { name: "Freegells", details: "Unidade", price: "12,00", image: "https://i.ibb.co/Pz0VqNkk/IMG-20260930-WA0035.jpg" },
+            { name: "Nucita napolitano", details: "Unidade", price: "14,00", image: "https://i.ibb.co/Qv3qQcPZ/IMG-20260930-WA0033.jpg1" },
+            { name: "Pé de moleque", details: "Unidade", price: "12,50", image: "https://i.ibb.co/23kfw3Lg/IMG-20260930-WA0031.jpg" },
+            { name: "Flanela", details: "p c/12 / m c/12 / g c/12", price: "17,00 a 31,00", image: "https://i.ibb.co/V031mx1f/IMG-20260930-WA0032.jpg" },
+            { name: "Bala yogurte", details: "Unidade", price: "8,50", image: "https://i.ibb.co/TDDMVZBS/IMG-20260930-WA0052.jpg" },
+            { name: "Escova infantil", details: "c/ 12 unidades", price: "17,00", image: "https://i.ibb.co/qYFBKsJc/IMG-20261003-WA0030.jpg" },
+            { name: "Doce de goiaba", details: "c/ 20 unidades", price: "50,00", image: "https://i.ibb.co/r21YjKwh/IMG-20260930-WA0049.jpg" },
+            { name: "Cotonetes", details: "c/ 12 unidades", price: "18,00", image: "https://i.ibb.co/G3cRSXBY/IMG-20260930-WA0050.jpg" },
+            { name: "Escova", details: "c/ 12 unidades", price: "17,00", image: "https://i.ibb.co/qYFBKsJc/IMG-20261003-WA0030.jpg" },
+            { name: "Biscoito Amori", details: "c/ 36 unidades", price: "80,00", image: "https://i.ibb.co/SwmTqk2G/IMG-20261003-WA0029.jpg" },
+            { name: "Esponja", details: "c/ 40 unidades", price: "35,00", image: "https://i.ibb.co/1tr0V8WY/IMG-20261003-WA0028.jpg" },
+            { name: "Bis", details: "c/ 3 unidades", price: "18,00", image: "https://i.ibb.co/VpP2HN3W/IMG-20260930-WA0016.jpg" },
+            { name: "Creme seda", details: "c/12 - unidade sai a 9,20", price: "110,40", image: "https://i.ibb.co/TDsmcLR2/IMG-20260930-WA0048.jpg" },
+            { name: "Biscoito chokolot", details: "c/ 30 unidades", price: "48,00", image: "https://i.ibb.co/XZVL00cG/IMG-20260930-WA0017.jpg" },
+            { name: "Shampoo Palmolive", details: "c/6 - unidade a 8,70", price: "52,00", image: "https://i.ibb.co/Tqt3v7yB/IMG-20260930-WA0023.jpg" },
+            { name: "Destravador", details: "Unidade", price: "15,00", image: "https://i.ibb.co/zWFmxrm9/IMG-20260930-WA0029.jpg" },
+            { name: "Tinta fashion color", details: "Unidade", price: "13,00", image: "https://i.ibb.co/zh2bwK8q/Gemini-Generated-Image-tnh23utnh23utnh2.jpg" },
+            { name: "Tinta probelle", details: "Unidade", price: "13,00", image: "https://i.ibb.co/RG7jZtBC/Gemini-Generated-Image-yw4817yw4817yw48.jpg" },
+            { name: "Fêmea / Macho", details: "Fêmea c/20 (1,75) / Macho c/20 (1,80)", price: "35,00 / 36,00", image: "https://i.ibb.co/mVd4Z7FV/IMG-20260930-WA0026.jpg" }
+        ];
+
+        const productsCatalog2 = [
+            { name: "Fardo de Chitos / Cebolitos / Fandango", details: "Fardo c/ 50 ou Tira c/ 10", price: "55,00 / 12,00", image: "" },
+            { name: "Batata gravatá", details: "Caixa c/ 20", price: "30,00", image: "" },
+            { name: "Salgado psiu", details: "Unidade / Fardo", price: "24,00", image: "" },
+            { name: "Nescau", details: "c/ 27 unidades", price: "52,00", image: "" },
+            { name: "Todynho Jaguaribe", details: "c/ 27 unidades", price: "35,00", image: "" },
+            { name: "Nissin original", details: "c/ 50 unidades", price: "95,00", image: "" },
+            { name: "Nissin Nosso Sabor", details: "c/ 50 unidades", price: "70,00", image: "" },
+            { name: "Pipoflocs gravatá", details: "c/ 12 unidades", price: "12,00", image: "" },
+            { name: "Pipoca gravatá 10g", details: "c/ 20 unidades", price: "8,00", image: "" },
+            { name: "Torresmo gravatá", details: "Unidade / Pacote", price: "12,00", image: "" },
+            { name: "Pipoca gravatá 30g", details: "c/ 10 unidades", price: "9,00", image: "" },
+            { name: "Chilito Ki Garoto", details: "c/ 10 unidades", price: "7,00", image: "" },
+            { name: "Wafer Pilar", details: "Unidade / Geral", price: "46,00", image: "" },
+            { name: "Wafer Vita Massa", details: "Unidade / Geral", price: "48,00", image: "" },
+            { name: "Paçoca", details: "c/ 67 unidades", price: "15,00", image: "" },
+            { name: "Bolo Luquinha", details: "c/ 12 unidades", price: "15,00", image: "" },
+            { name: "Bis", details: "c/ 3 unidades", price: "18,00", image: "" },
+            { name: "Balas Freegells", details: "Unidade", price: "8,50", image: "" },
+            { name: "Bala Santa Rita", details: "Unidade", price: "8,50", image: "" },
+            { name: "Bala Tofano", details: "Unidade", price: "8,50", image: "" },
+            { name: "Bala hortelã", details: "Unidade", price: "8,50", image: "" },
+            { name: "Doce pé de moleque", details: "Unidade", price: "12,50", image: "" },
+            { name: "Pirulito Loli", details: "Unidade", price: "11,80", image: "" },
+            { name: "Pirulito Pop", details: "Unidade", price: "14,50", image: "" },
+            { name: "Pirulito mastigável", details: "Unidade", price: "14,00", image: "" },
+            { name: "Chiclete c/ figurinhas", details: "Unidade", price: "8,00", image: "" },
+            { name: "Nucita", details: "Unidade", price: "14,00", image: "" },
+            { name: "Chocolate Garoto", details: "Unidade", price: "12,85", image: "" },
+            { name: "Sabonete Even", details: "c/ 12 unidades", price: "21,00", image: "" },
+            { name: "Vassoura Linda", details: "Unidade", price: "78,00", image: "" },
+            { name: "Escova de dente (Adulto e Infantil)", details: "c/ 12 unidades", price: "17,00", image: "" },
+            { name: "Vassoura Lindeza", details: "Unidade", price: "96,00", image: "" },
+            { name: "Gillette Wilkinson", details: "c/ 20 unidades", price: "25,00", image: "" },
+            { name: "Gillette Bic", details: "c/ 24 unidades", price: "36,00", image: "" },
+            { name: "Gillette Super Barba", details: "Unidade", price: "38,00", image: "" },
+            { name: "Gillette Lord", details: "Unidade", price: "20,00", image: "" },
+            { name: "Cotonete", details: "c/ 12 unidades", price: "18,00", image: "" },
+            { name: "Pedra sanitária", details: "c/ 12 unidades", price: "18,00", image: "" },
+            { name: "Biscoito Tuck's", details: "c/ 30 unidades", price: "63,00", image: "" },
+            { name: "Biscoito Recheado Amori", details: "c/ 36 unidades", price: "80,00", image: "" },
+            { name: "Biscoito Tieta", details: "c/ 20 unidades", price: "90,00", image: "" },
+            { name: "Biscoito amanteigado Lanchinho", details: "c/ 30 unidades", price: "21,00", image: "" },
+            { name: "Escova de unha", details: "Unidade", price: "23,00", image: "" },
+            { name: "Amoníaco", details: "Unidade", price: "29,00", image: "" },
+            { name: "Kit Seda (Shampoo + Condicionador)", details: "Kit", price: "18,00", image: "" },
+            { name: "Rastelo", details: "Unidade", price: "96,00", image: "" },
+            { name: "Hidratante Salon Line", details: "Unidade", price: "17,00", image: "" },
+            { name: "Kit Elseve", details: "Kit", price: "30,00", image: "" },
+            { name: "Rodo (30cm e 40cm)", details: "a Dúzia (c/ 12)", price: "57,00", image: "" },
+            { name: "Shampoo Palmolive", details: "Unidade", price: "8,50", image: "" },
+            { name: "Hidratante Paixão", details: "Unidade", price: "8,50", image: "" },
+            { name: "Hidratante Monange", details: "Unidade", price: "8,50", image: "" },
+            { name: "Prestobarba Gillette", details: "c/ 24 unidades", price: "53,00", image: "" },
+            { name: "Prestobarba Bic 3 Lâminas", details: "c/ 24 unidades", price: "53,00", image: "" },
+            { name: "Sabão Juá em pó", details: "Somente para pedido", price: "79,90", image: "" },
+            { name: "Detergente Juá", details: "Somente para pedido", price: "49,50", image: "" },
+            { name: "Isqueiro Bic", details: "c/ 12 unidades", price: "49,00", image: "" },
+            { name: "Creme Dental Sorriso 90g", details: "Unidade", price: "46,00", image: "" },
+            { name: "Creme Dental Sorriso 70g", details: "Unidade", price: "34,00", image: "" },
+            { name: "Creme Dental Sorriso 180g", details: "Unidade", price: "64,00", image: "" },
+            { name: "Creme Dental KDS (Barbie / Hotwheels / Galinha Pintadinha / Lilica)", details: "c/ 12 unidades", price: "44,00", image: "" },
+            { name: "Pente com cabo", details: "Unidade", price: "15,00", image: "" },
+            { name: "Pente de bolso", details: "c/ 24 unidades", price: "15,00", image: "" },
+            { name: "Esponja de prato", details: "c/ 60 unidades", price: "35,00", image: "" },
+            { name: "Esponja de aço", details: "Unidade / Pacote", price: "16,00", image: "" },
+            { name: "Baladeira média", details: "Unidade", price: "27,00", image: "" },
+            { name: "Acetona", details: "c/ 12 unidades", price: "31,00", image: "" },
+            { name: "Água oxigenada", details: "Unidade", price: "29,00", image: "" },
+            { name: "Borracha de pressão", details: "Unidade", price: "20,00", image: "" },
+            { name: "Caderno pequeno", details: "c/ 20 unidades", price: "29,00", image: "" },
+            { name: "Caderneta de bolso", details: "c/ 40 unidades", price: "27,00", image: "" },
+            { name: "Prestobarba Bic verde 2 lâminas", details: "c/ 24 unidades", price: "48,00", image: "" },
+            { name: "Caderneta média", details: "c/ 20 unidades", price: "27,00", image: "" },
+            { name: "Sabonete de aroeira", details: "Unidade", price: "16,00", image: "" },
+            { name: "Cola branca", details: "Unidade", price: "16,00", image: "" },
+            { name: "Flanela P", details: "Unidade / Pacote", price: "18,00", image: "" },
+            { name: "Flanela M", details: "Unidade / Pacote", price: "23,00", image: "" },
+            { name: "Flanela G", details: "Unidade / Pacote", price: "31,00", image: "" },
+            { name: "Cortador de unha P", details: "Unidade", price: "18,00", image: "" },
+            { name: "Cortador de unha G", details: "Unidade", price: "31,00", image: "" },
+            { name: "Liga de moto de 2m", details: "Unidade", price: "20,00", image: "" },
+            { name: "Fita isolante 5m", details: "Unidade", price: "15,00", image: "" },
+            { name: "Fita isolante 10m", details: "Unidade", price: "20,00", image: "" },
+            { name: "Fita adesiva G", details: "Unidade", price: "18,00", image: "" },
+            { name: "Fita gomada", details: "Unidade", price: "24,00", image: "" },
+            { name: "Durex", details: "Unidade", price: "8,00", image: "" },
+            { name: "Pano de chão esfregão", details: "c/ 3 unidades", price: "8,50", image: "" },
+            { name: "Lâmpada Price LED 9W", details: "Unidade", price: "36,00", image: "" },
+            { name: "Tinta de cabelo Fashion", details: "Unidade", price: "13,00", image: "" },
+            { name: "Creme de pentear Seda", details: "Unidade", price: "9,20", image: "" }
+        ];
+
+        let activeProducts = productsCatalog1;
+
+        const gridContainer = document.getElementById('productsGrid');
+        const tableBody = document.getElementById('productsTableBody');
+
+        function renderProducts(list) {
+            gridContainer.innerHTML = '';
+            tableBody.innerHTML = '';
+            if (list.length === 0) {
+                gridContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777; padding: 20px;">Nenhum produto encontrado.</p>';
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #777;">Nenhum produto encontrado.</td></tr>';
+                return;
+            }
+            list.forEach(item => {
+                const imageUrl = item.image && item.image.trim() !== "" ? item.image : 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=500&auto=format&fit=crop&q=60';
+                
+                // Grelha de Cards
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${imageUrl}" alt="${item.name}" class="product-img" onerror="this.src='https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=500&auto=format&fit=crop&q=60'">
+                    <div class="product-info">
+                        <div>
+                            <div class="product-name">${item.name}</div>
+                            <div class="product-details">${item.details}</div>
+                        </div>
+                        <div class="product-price">R$ ${item.price}</div>
+                    </div>
+                `;
+                gridContainer.appendChild(card);
+
+                // Tabela
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><img src="${imageUrl}" alt="${item.name}" class="table-img" onerror="this.src='https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=500&auto=format&fit=crop&q=60'"></td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.details}</td>
+                    <td><span style="color: var(--primary); font-weight: 700;">R$ ${item.price}</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = activeProducts.filter(p => 
+                p.name.toLowerCase().includes(query) || p.details.toLowerCase().includes(query)
+            );
+            renderProducts(filtered);
+        }
+
+        // Alternância de Catálogos
+        const btnCatalog1 = document.getElementById('btnCatalog1');
+        const btnCatalog2 = document.getElementById('btnCatalog2');
+
+        btnCatalog1.addEventListener('click', () => {
+            btnCatalog1.classList.add('active');
+            btnCatalog2.classList.remove('active');
+            activeProducts = productsCatalog1;
+            document.getElementById('searchInput').value = '';
+            renderProducts(activeProducts);
+        });
+
+        btnCatalog2.addEventListener('click', () => {
+            btnCatalog2.classList.add('active');
+            btnCatalog1.classList.remove('active');
+            activeProducts = productsCatalog2;
+            document.getElementById('searchInput').value = '';
+            renderProducts(activeProducts);
+        });
+
+        // Controles de Visualização
+        const btnGrid = document.getElementById('btnGrid');
+        const btnTable = document.getElementById('btnTable');
+        const productsGrid = document.getElementById('productsGrid');
+        const productsTableContainer = document.getElementById('productsTableContainer');
+
+        btnGrid.addEventListener('click', () => {
+            btnGrid.classList.add('active');
+            btnTable.classList.remove('active');
+            productsGrid.style.display = 'grid';
+            productsTableContainer.style.display = 'none';
+        });
+
+        btnTable.addEventListener('click', () => {
+            btnTable.classList.add('active');
+            btnGrid.classList.remove('active');
+            productsGrid.style.display = 'none';
+            productsTableContainer.style.display = 'block';
+        });
+
+        // Menu Lateral (Drawer)
+        const menuToggle = document.getElementById('menuToggle');
+        const closeDrawer = document.getElementById('closeDrawer');
+        const drawer = document.getElementById('drawer');
+        const overlay = document.getElementById('overlay');
+
+        menuToggle.addEventListener('click', () => {
+            drawer.classList.add('open');
+            overlay.classList.add('active');
+        });
+
+        closeDrawer.addEventListener('click', () => {
+            drawer.classList.remove('open');
+            overlay.classList.remove('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            drawer.classList.remove('open');
+            overlay.classList.remove('active');
+        });
+
+        // Inicializar listagem
+        renderProducts(activeProducts);
+    </script>
+</body>
+</html>
